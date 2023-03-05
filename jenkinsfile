@@ -1,0 +1,28 @@
+@Library("groovy-global-shared-lib") _
+pipeline {
+    agent any
+
+    stages {
+        stage('Example') {
+            steps {
+                helloWorld()
+                hellowordSimple()
+                sh "echo this is from Jenkis and PWD"
+                sh "ls"
+                sh "pwd"
+                sh "echo hai > hai.txt"
+                
+                script {
+                   GIT_COMMIT_EMAIL = sh (
+                        script: 'pwd',
+                        returnStdout: true
+                    ).trim()
+                    echo "Git committer email: ${GIT_COMMIT_EMAIL}"
+                }
+                
+                
+                helloWorldSimpleWithArgs("karthick", "Monday")
+            }
+        }
+    }
+}

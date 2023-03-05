@@ -1,0 +1,42 @@
+@Library("groovy-global-shared-lib") _
+pipeline {
+
+  agent {
+    kubernetes { // Kubernetes plugin
+      cloud 'gke-dev_cluster' // plugin cloud configuration name. Here is where jenkins controller and following containers are running.
+      yamlFile 'pipeline-k8s-groovylib-python/kaniko-builder.yaml'
+    }
+  }
+  
+
+  stages {
+
+    // stage('Kaniko Build & Push Image') {
+    //   steps {
+    //     container('kaniko') { //name mentioned in the kaniko-builder.yaml file.
+    //       script {
+    //         sh '''
+    //         /kaniko/executor --dockerfile `pwd`/apps/app1/Dockerfile \
+    //                          --context `pwd` \
+    //                          --destination=mydockeraccfortest/myweb:${BUILD_NUMBER}
+    //         '''
+    //         //The above command build, tag and push to private registry. Regisntry credentinals are added as secret in k8's and mounted secret
+    //         //volume into the Kaniko container in yaml file.
+    //       }
+    //     }
+    //   }
+    // }
+    
+    stage('Deploy App to DEV Kubernetes Cluster') { // This deploys to the same cluster (DEV) where our jenkins pipeline is running.
+      steps {
+        container('kubectl') {  //Here we are not passing any k8's config files. Insted we use service account for rbac permissions to perform the below actions.
+            sh 'kubectl get pods'
+            // sh 'sed -i "s/<TAG>/${BUILD_NUMBER}/" ./apps/app1/myweb.yaml'
+            // sh 'cat ./apps/app1/myweb.yaml'
+            // sh 'kubectl apply -f ./apps/app1/myweb.yaml'
+        }
+      }
+    }
+    
+  }
+}
