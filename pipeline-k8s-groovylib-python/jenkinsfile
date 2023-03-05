@@ -1,4 +1,4 @@
-@Library("groovy-global-shared-lib") _
+//@Library("groovy-global-shared-lib") _
 pipeline {
 
   agent {
